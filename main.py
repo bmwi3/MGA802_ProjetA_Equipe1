@@ -18,6 +18,6 @@ texte_entre='str'
 #Chemin
 chemin_fichier=''
 
-
+test = 1
 
 
