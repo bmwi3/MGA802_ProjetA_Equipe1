@@ -1,7 +1,4 @@
 def encode_cesar(text, shift):
-    """
-    Encodes the given text using Caesar cipher with the specified shift.
-    """
     encoded_text = ""
     for char in text:
         if char.isalpha():
@@ -11,16 +8,11 @@ def encode_cesar(text, shift):
             encoded_text += char
     return encoded_text
 
+
 def decode_cesar(text, shift):
-    """
-    Decodes the given text using Caesar cipher with the specified shift.
-    """
     return encode_cesar(text, -shift)
 
 def brute_force_cesar(text):
-    """
-    Attempts to decode the given text using all possible shifts (0-25) and returns the best guess.
-    """
     best_guess = ""
     best_score = 0
     for shift in range(26):
