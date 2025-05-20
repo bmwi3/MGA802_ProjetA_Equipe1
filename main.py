@@ -18,9 +18,9 @@ texte_entre='str'
 #Chemin
 chemin_fichier=''
 
-test = 1
-test2 = 2
 #######################################
 #########" Nom fonction "###############
 
-
+encode_cesar
+decode_cesar
+brute_force_cesar
