@@ -1,4 +1,6 @@
 #Code principal à ouvrir par l'utilisateur
+##################### Variables ################
+
 # Décalage de l'encodage
 cle=0
 
@@ -18,6 +20,7 @@ texte_entre='str'
 #Chemin
 chemin_fichier=''
 
-test = 1
+#######################################
+#########" Nom fonction "###############
 
 
