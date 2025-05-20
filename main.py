@@ -19,5 +19,6 @@ texte_entre='str'
 chemin_fichier=''
 
 test = 1
+test2 = 2
 
 
