@@ -1,4 +1,6 @@
 #Code principal à ouvrir par l'utilisateur
+##################### Variables ################
+
 # Décalage de l'encodage
 cle=0
 
