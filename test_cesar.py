@@ -11,32 +11,7 @@
 
 #premiere logique qui soccupe de tester les 25 combinaisons
 
-### Fct de test 
-def encode_cesar(text, shift):
-    texte_encode = ""
-    for char in text:
-        if char.isalpha():
-            # Décalage de la lettre
-            decalage = ord(char) + shift
-            # Si le décalage dépasse 'Z', on revient au début de l'alphabet
-            if char.isupper() and decalage > ord('Z'):
-                decalage -= 26
-            elif char.islower() and decalage > ord('z'):
-                decalage -= 26
-            texte_encode += chr(decalage)
-        else:
-            texte_encode += char
-    return texte_encode
 
-def decode_cesar(text, shift):
-    return encode_cesar(text, -shift)
-
-
-alphabet =['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
-           'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
-
-
-####
 
 def brute_force_cesar(text):
     texte_devine = ""
