@@ -27,19 +27,19 @@ chemin_fichier=''
 #########" Nom fonction "##############
 ALPHABET = "abcdefghijklmnopqrstuvwxyz"
 
-def choix_de_la_fonction():
-    choix_fct = input("bonjour, ce code est un decripteur, il permet de cripter ou de decripter un texte,\n"
-          "Si vous voulez decripter, tapez 1, vous voulez cripter, tapez 2 : ,vous voulez decripter sans connaitre la clé, tapez 3 :")
-    if choix_fct == str(1):
-        texte, cle = entree_utilisateur()
-        decode_cesar(texte, cle, True)  # Ajout de l'argument booleen ici
-    if choix_fct == str(2):
-        encode_cesar()
-    if choix_fct == str(3):
-        texte, _ = entree_utilisateur()  # On ignore la clé pour le brute force
-        brute_force_cesar(texte)
-    elif choix_fct != str(1) and choix_fct != str(2) and choix_fct != str(3):
-        print("vous n'avez pas tape le bon charactere")
+# def choix_de_la_fonction():
+#     choix_fct = input("bonjour, ce code est un decripteur, il permet de cripter ou de decripter un texte,\n"
+#           "Si vous voulez decripter, tapez 1, vous voulez cripter, tapez 2 : ,vous voulez decripter sans connaitre la clé, tapez 3 :")
+#     if choix_fct == str(1):
+#         texte, cle = entree_utilisateur()
+#         decode_cesar(texte, cle, True)  # Ajout de l'argument booleen ici
+#     if choix_fct == str(2):
+#         encode_cesar()
+#     if choix_fct == str(3):
+#         texte, _ = entree_utilisateur()  # On ignore la clé pour le brute force
+#         brute_force_cesar(texte)
+#     elif choix_fct != str(1) and choix_fct != str(2) and choix_fct != str(3):
+#         print("vous n'avez pas tape le bon charactere")
 
 
 def entree_utilisateur():
@@ -100,6 +100,7 @@ def decode_cesar(text, cle):
 
 
 
+#méthode vu sur https://www.dcode.fr/chiffre-cesar
 
 def brute_force_cesar(text):
     texte_devine = ""
@@ -157,7 +158,7 @@ def ouvrir_fichier():
         texte = f.read()
     cle_entree = input("Veuillez entrer la clé (nombre entier, positif ou négatif) : ")
     if cle_entree is None or cle_entree.strip() == "":
-        print("Erreur : la clé doit être un nombre entier.")
+        print("Vous n'avez pas entré de clé.")
         return texte, None
     else:
         cle = int(cle_entree)
@@ -168,12 +169,14 @@ def sauvegarder_fichier(texte):
     #w pour overwrite le fichier si il existe déjà
     with open(nom, "w", encoding="utf-8") as f:
         f.write(texte)
+    print("Sauvegarde réussie\n")
 #source https://www.w3schools.com/python/python_file_write.asp
 
 def main():
-    print("Bonjour, ce code est un descripteur, il permet de cripter ou de descripter un texte,\n")
+    print("Bonjour, ce code est un decripteur, il permet de cripter ou de decripter un texte,\n")
     #boucle infinie pour ne pas stopper le code
     while True:
+        print("Choisir une option")
         print("1. Encoder un texte")
         print("2. Décoder un texte")
         print("3. Encoder un texte depuis un fichier")
@@ -219,7 +222,7 @@ def main():
             texte = input("Veuillez entrer le texte à déchiffrer : ")
             brute_force_cesar(texte)
         elif choix_fct == "6":
-            texte = ouvrir_fichier()
+            texte, cle = ouvrir_fichier()
             brute_force_cesar(texte)
         else:
             print("Merci d'entrer un nombre entre 0 et 6.")
