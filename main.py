@@ -1,7 +1,14 @@
 #Code principal à ouvrir par l'utilisateur
 
 import os
+import unicodedata
 
+def enlever_caracteres_speciaux(mot):
+    """Enlève les caractères spéciaux d'un texte."""
+    mot_normalise = unicodedata.normalize('NKFD', mot)
+    return ''.join([char for char in mot_normalise if not unicodedata.combining(char)]
+    )
+    return texte_sans_caracteres_speciaux
 ##################### Variables ################
 
 # Décalage de l'encodage
@@ -44,12 +51,13 @@ ALPHABET = "abcdefghijklmnopqrstuvwxyz"
 
 def entree_utilisateur():
     texte_cripte = str(input("pouvez vous indiquer ici votre texte  : "))
+    texte_normalise = enlever_caracteres_speciaux(texte_cripte)
     entre_cle = input("tapez la cle ici svp : ")
     if entre_cle.strip() == "":
-        return texte_cripte, None
+        return texte_normalise, None
     else:
         cle = int(entre_cle)
-        return texte_cripte, cle
+        return texte_normalise, cle
     
 
 def encode_cesar(text, cle):
@@ -188,8 +196,8 @@ def main():
         if choix_fct == "1":
             texte, cle = entree_utilisateur()
             if cle is not None:
-                res = encode_cesar(texte, cle)
-                print("\nTexte crypté :\n", res)
+                resultat = encode_cesar(texte, cle)
+                print("\nTexte crypté :\n", resultat)
             else:
                 print("Erreur : la clé doit être un nombre entier.")
                 continue
@@ -205,16 +213,16 @@ def main():
         elif choix_fct == "3":
             texte, cle = ouvrir_fichier()
             if texte is not None and cle is not None:
-                res = encode_cesar(texte, cle)
-                sauvegarder_fichier(res)
+                resultat = encode_cesar(texte, cle)
+                sauvegarder_fichier(resultat)
             else:
                 print("Erreur : la clé doit être un nombre entier.")
                 continue
         elif choix_fct == "4":
             texte, cle = ouvrir_fichier()
             if texte is not None and cle is not None:
-                res = decode_cesar(texte, cle)
-                sauvegarder_fichier(res)
+                resultat = decode_cesar(texte, cle)
+                sauvegarder_fichier(resultat)
             else:
                 print("Erreur : la clé doit être un nombre entier.")
                 continue
