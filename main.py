@@ -1,55 +1,35 @@
-#Code principal à ouvrir par l'utilisateur
+################# Ce code permet de réaliser du criptage decriptage de césar ##################
+# Il est constitué de différentes fonctions chacun réalisant une opérations particulière
+# Le code va afficher un menu permettant à l'utilisateur de sélectionner la fonctionnalité qu'il veut
 
+######### Importation des bibliothèques nécessaires #######
 import os
 import unicodedata
 
+########## Variable globale ##############
+ALPHABET = "abcdefghijklmnopqrstuvwxyz"
+
 def enlever_caracteres_speciaux(mot):
-    """Enlève les caractères spéciaux d'un texte."""
+    """Enlève les caractères spéciaux d'un texte.
+
+    Args:
+        mot (str): Le texte à normaliser.
+
+    Returns:
+        str: Le texte normalisé sans caractères spéciaux.
+    """
     mot_normalise = unicodedata.normalize('NKFD', mot)
     return ''.join([char for char in mot_normalise if not unicodedata.combining(char)]
     )
-    return texte_sans_caracteres_speciaux
-##################### Variables ################
-
-# Décalage de l'encodage
-cle=0
-
-#Text console à décoder // Fichier
-texte_encode=[]
-
-#Texte console a encode //Fichier encodé
-
-
-#brute force
-texte_devine=[]
-cle_devine=[]
-
-#Input utilisateur
-
-
-#Chemin
-chemin_fichier=''
-
-#######################################
-#########" Nom fonction "##############
-ALPHABET = "abcdefghijklmnopqrstuvwxyz"
-
-# def choix_de_la_fonction():
-#     choix_fct = input("bonjour, ce code est un decripteur, il permet de cripter ou de decripter un texte,\n"
-#           "Si vous voulez decripter, tapez 1, vous voulez cripter, tapez 2 : ,vous voulez decripter sans connaitre la clé, tapez 3 :")
-#     if choix_fct == str(1):
-#         texte, cle = entree_utilisateur()
-#         decode_cesar(texte, cle, True)  # Ajout de l'argument booleen ici
-#     if choix_fct == str(2):
-#         encode_cesar()
-#     if choix_fct == str(3):
-#         texte, _ = entree_utilisateur()  # On ignore la clé pour le brute force
-#         brute_force_cesar(texte)
-#     elif choix_fct != str(1) and choix_fct != str(2) and choix_fct != str(3):
-#         print("vous n'avez pas tape le bon charactere")
-
 
 def entree_utilisateur():
+    """Demande le texte à chiffrer et déchiffrer ainsi que la clé.
+    Normalise le texte.
+
+    Returns:
+        texte_normalise (str): texte qui va être encoder/décoder par la suite.
+        cle (int): clé de chiffrement/dechiffrement ou None si aucune clé n'est entrée.
+    """
     texte_cripte = str(input("pouvez vous indiquer ici votre texte  : "))
     texte_normalise = enlever_caracteres_speciaux(texte_cripte)
     entre_cle = input("tapez la cle ici svp : ")
@@ -60,9 +40,18 @@ def entree_utilisateur():
         return texte_normalise, cle
     
 
-def encode_cesar(text, cle):
+def encode_cesar(texte, cle):
+    """Réalise l'encodage du texte.
+
+    Args:
+        texte (str): Le texte à encoder.
+        cle (int): La clé de chiffrement.
+
+    Returns:
+        texte_code (str): Le texte encodé/decodé.
+    """
     texte_code = ''
-    for lettre in text:
+    for lettre in texte:
         if lettre.lower() in ALPHABET:
             position = ALPHABET.index(lettre.lower())
             nouvelle_position = (position + cle) % 26
@@ -74,53 +63,42 @@ def encode_cesar(text, cle):
             texte_code += lettre
     return texte_code
 
-def decode_cesar(text, cle):
-    # Pour déchiffrer, on inverse le décalage
-    return encode_cesar(text, -cle)
+def decode_cesar(texte, cle):
+    """Réalise le decodage du texte en utilisant la fonction encodage.
+        Déchiffrer revient à encoder avec un décalage négatif ou à inverser le décalage.
 
+    Args:
+        texte (str): Le texte à décoder.
+        cle (int): La clé de chiffrement.
 
-# def decode_cesar(text,decalage,booleen):
-    
-#     alphabet = "abcdefghijklmnopqrstuvwxyz"
-#     texte_decode = ''
-
-#     # if text == None and decalage == None:
-#     #     print ("vous avez choisi le decrytage.")
-#     #     text = str(input("pouvez vous indiquer ici le texte a decripter svp : "))
-#     #     decalage = int(input("conaissez vous la cle, si oui, tapez la, sinon, tapez 0 : "))
-   
-
-
-#     for lettre in text :
-#         if lettre in alphabet :
-#             position = alphabet.index(lettre)
-#             nouvelle_position = (position + decalage)%26
-#             texte_decode += alphabet[nouvelle_position]
-#         else :
-#             texte_decode += lettre
-#     if booleen == True:
-#         print ('voici le texte decode : ', texte_decode)
-#         return texte_decode
-#     elif booleen == False:
-#         return texte_decode
-    
-
-
-
+    Returns:
+        texte_code (str): Le texte decodé.
+    """
+    return encode_cesar(texte, -cle)
 
 #méthode vu sur https://www.dcode.fr/chiffre-cesar
 
-def brute_force_cesar(text):
+def brute_force_cesar(texte):
+    """Réalise le decodage du texte sans connaitre la clé.
+    Nous sommes dans la langue francaise la lettre la plus fréquente est le E
+    On compte le nombre de E dans le texte décodé
+    Cette méthode est plus fiable avec un texte long.
+
+    Args:
+        texte (str): Le texte qui est à décoder.
+
+    Returns:
+        texte_devine (str): Le texte qui est la solution la plus probable.
+        meilleur_score (int): Le score du texte deviné, basé sur la fréquence de la lettre 'e'.
+        meilleure_decalage (int): Le décalage utilisé pour obtenir le texte deviné.
+    """
     texte_devine = ""
     meilleur_score = 0
     meilleure_decalage = 0
-    double=0
     for decalage in range(26):
-        texte_decode = decode_cesar(text, decalage)
-        #Nous sommes dans la langue francaise la lettre la plus fréquente est le E
-        #On compte le nombre de E dans le texte décodé
+        texte_decode = decode_cesar(texte, decalage)
         score = sum(1 for char in texte_decode if char=='e')
-        #print(score)
+
         if score > meilleur_score:
             meilleur_score = score
             texte_devine = texte_decode
@@ -135,28 +113,37 @@ def brute_force_cesar(text):
 
 
 def brute_force_cesar_manuel(text):
+    """Réalise le decodage du texte sans connaitre la clé.
+    Demande à l'utilisateur à chaque itération une clé jusqu'a ce que l'utilisateur soit satisfait.
+    Méthode plus interactive mais pas forcement efficiente.
+
+    Args:
+        texte (str): Le texte qui est à décoder.
+
+    Returns:
+        texte_devine (str): Le texte qui est la solution la plus probable.
+        meilleur_score (int): Le score du texte deviné, basé sur la fréquence de la lettre 'e'.
+        meilleure_decalage (int): Le décalage utilisé pour obtenir le texte deviné.
+    """
     while True:
         decalage = int(input("choisir le décalage: "))
         texte_decode = decode_cesar(text, decalage)
         print(texte_decode)
         retour_utilisateur = input("le resultat vous convient-il ? (o/n)")
+        #si oui on sort de la boucle
         if retour_utilisateur.lower() == 'o':
             break
         else:
             print("Essayez un autre décalage.")
-        
-        #si oui on sort de la boucle
+    return texte_decode
 
-
-#text="yt h'peetaat vgddi"
-
-#print(brute_force_cesar(text))
 
 def ouvrir_fichier():
     """Ouvre le fichier de mots et retourne une liste de mots.
 
     Returns:
-        list: Liste des mots lus dans le fichier, ou False si le fichier n'est pas trouvé.
+        texte (str): Liste des mots lus dans le fichier, ou False si le fichier n'est pas trouvé.
+        clé (int): Clé de chiffrement/dechiffrement ou None si aucune clé n'est entrée.
     """
     nom = input("Nom du fichier à lire : ")
     if not os.path.isfile(nom):
@@ -173,6 +160,8 @@ def ouvrir_fichier():
         return texte, cle
 
 def sauvegarder_fichier(texte):
+    """Enregistre le fichier de mots après l'opération effectué.
+    """
     nom = input("Nom du fichier pour sauvegarder le résultat : ")
     #w pour overwrite le fichier si il existe déjà
     with open(nom, "w", encoding="utf-8") as f:
@@ -181,6 +170,9 @@ def sauvegarder_fichier(texte):
 #source https://www.w3schools.com/python/python_file_write.asp
 
 def main():
+    """Fonction principale qui affiche le menu et gère les choix de l'utilisateur.
+    Demande à l'utilisateur de choisir une option et appelle la fonction correspondante.
+    """
     print("Bonjour, ce code est un decripteur, il permet de cripter ou de decripter un texte,\n")
     #boucle infinie pour ne pas stopper le code
     while True:
@@ -239,7 +231,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    #encode_cesar()
-    #decode_cesar()
-    #brute_force_cesar()
-    #brute_force_cesar_manuel()
