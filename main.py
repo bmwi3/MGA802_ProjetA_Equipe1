@@ -33,6 +33,7 @@ def entree_utilisateur():
     texte_cripte = str(input("pouvez vous indiquer ici votre texte  : "))
     texte_normalise = enlever_caracteres_speciaux(texte_cripte)
     entre_cle = input("tapez la cle ici svp : ")
+    #Si l'utilisateur n'entre pas de clé, on retourne le texte normalisé et None
     if entre_cle.strip() == "":
         return texte_normalise, None
     else:
@@ -51,7 +52,12 @@ def encode_cesar(texte, cle):
         texte_code (str): Le texte encodé/decodé.
     """
     texte_code = ''
+    # On parcourt chaque lettre du texte
     for lettre in texte:
+        # On vérifie si la lettre est dans l'alphabet
+        # Si oui, on calcule sa position dans l'alphabet
+        # On applique le décalage et on récupère la nouvelle lettre
+        # Modulo 26 pour rester dans les limites de l'alphabet
         if lettre.lower() in ALPHABET:
             position = ALPHABET.index(lettre.lower())
             nouvelle_position = (position + cle) % 26
@@ -74,6 +80,7 @@ def decode_cesar(texte, cle):
     Returns:
         texte_code (str): Le texte decodé.
     """
+    # Si la clé est negative son inverse est positif et vice versa
     return encode_cesar(texte, -cle)
 
 #méthode vu sur https://www.dcode.fr/chiffre-cesar
@@ -95,24 +102,27 @@ def brute_force_cesar(texte):
     texte_devine = ""
     meilleur_score = 0
     meilleure_decalage = 0
-    for decalage in range(26):
+    # On essaie tous les décalages de 0 à 26
+    for decalage in range(27):
         texte_decode = decode_cesar(texte, decalage)
+        # On compte le nombre de 'e' dans le texte décodé
         score = sum(1 for char in texte_decode if char=='e')
-
+        # Si le score est meilleur que le meilleur score précédent, on met à jour
         if score > meilleur_score:
             meilleur_score = score
             texte_devine = texte_decode
             meilleure_decalage = decalage
 
     print("le texte devine est : ", texte_devine)
+    # On demande à l'utilisateur s'il est satisfait du résultat sinon on passe en mode brute force manuel
     satisfait = input("Êtes-vous satisfait du résultat ? (o/n) : ")
     if satisfait.lower() != 'o':
         print("Passage en mode brute force manuel.")
-        brute_force_cesar_manuel(text)
+        brute_force_cesar_manuel(texte)
     return texte_devine, meilleure_decalage, meilleur_score
 
 
-def brute_force_cesar_manuel(text):
+def brute_force_cesar_manuel(texte):
     """Réalise le decodage du texte sans connaitre la clé.
     Demande à l'utilisateur à chaque itération une clé jusqu'a ce que l'utilisateur soit satisfait.
     Méthode plus interactive mais pas forcement efficiente.
@@ -127,7 +137,7 @@ def brute_force_cesar_manuel(text):
     """
     while True:
         decalage = int(input("choisir le décalage: "))
-        texte_decode = decode_cesar(text, decalage)
+        texte_decode = decode_cesar(texte, decalage)
         print(texte_decode)
         retour_utilisateur = input("le resultat vous convient-il ? (o/n)")
         #si oui on sort de la boucle
@@ -145,13 +155,17 @@ def ouvrir_fichier():
         texte (str): Liste des mots lus dans le fichier, ou False si le fichier n'est pas trouvé.
         clé (int): Clé de chiffrement/dechiffrement ou None si aucune clé n'est entrée.
     """
-    nom = input("Nom du fichier à lire : ")
+    nom = input("Nom du fichier à lire (attention selon le nom du document il faut parfois mettre .txt): ")
+    # On vérifie si le fichier existe
     if not os.path.isfile(nom):
         print("Erreur : fichier introuvable.")
         return None, None
-    with open(nom, encoding="utf-8") as f:
+    # On ouvre le fichier en mode lecture
+    with open(nom,'r', encoding="utf-8") as f:
         texte = f.read()
     cle_entree = input("Veuillez entrer la clé (nombre entier, positif ou négatif) : ")
+    # Si l'utilisateur n'entre pas de clé, on retourne le texte et None
+    # Sinon on cast la clé en entier
     if cle_entree is None or cle_entree.strip() == "":
         print("Vous n'avez pas entré de clé.")
         return texte, None
@@ -173,10 +187,12 @@ def main():
     """Fonction principale qui affiche le menu et gère les choix de l'utilisateur.
     Demande à l'utilisateur de choisir une option et appelle la fonction correspondante.
     """
-    print("Bonjour, ce code est un decripteur, il permet de cripter ou de decripter un texte,\n")
+    # Affichage du message d'accueil au premier lancement
+    print("\nBonjour, ce code est un decripteur, il permet de cripter ou de decripter un texte ou un fichier.")
     #boucle infinie pour ne pas stopper le code
+    # Le code s'arrête si l'utilisateur entre un nombre autre que 1, 2, 3, 4, 5 ou 6
     while True:
-        print("Choisir une option")
+        print("\nChoisir une option")
         print("1. Encoder un texte")
         print("2. Décoder un texte")
         print("3. Encoder un texte depuis un fichier")
@@ -185,6 +201,7 @@ def main():
         print("6. Brute force sur un texte depuis un fichier")
         choix_fct = input("Votre choix : ")
         #usage de if else if pour remplacer le switch case
+        # Encoder le texte
         if choix_fct == "1":
             texte, cle = entree_utilisateur()
             if cle is not None:
@@ -193,6 +210,7 @@ def main():
             else:
                 print("Erreur : la clé doit être un nombre entier.")
                 continue
+        # Décoder le texte
         elif choix_fct == "2":
             texte, cle = entree_utilisateur()
             if cle is not None:
@@ -202,6 +220,7 @@ def main():
                 print("Erreur : la clé doit être un nombre entier.\n")
                 print("Sans clé merci d'utiliser brute force.\n")
                 continue
+        # Encoder le texte depuis un fichier
         elif choix_fct == "3":
             texte, cle = ouvrir_fichier()
             if texte is not None and cle is not None:
@@ -210,6 +229,7 @@ def main():
             else:
                 print("Erreur : la clé doit être un nombre entier.")
                 continue
+        # Décoder le texte depuis un fichier
         elif choix_fct == "4":
             texte, cle = ouvrir_fichier()
             if texte is not None and cle is not None:
@@ -218,9 +238,11 @@ def main():
             else:
                 print("Erreur : la clé doit être un nombre entier.")
                 continue
+        # Brute force sur un texte entré manuellement
         elif choix_fct == "5":
             texte = input("Veuillez entrer le texte à déchiffrer : ")
             brute_force_cesar(texte)
+        # Brute force sur un texte depuis un fichier
         elif choix_fct == "6":
             texte, cle = ouvrir_fichier()
             brute_force_cesar(texte)
