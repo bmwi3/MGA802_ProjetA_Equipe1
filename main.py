@@ -5,10 +5,11 @@
 ######### Importation des bibliothèques nécessaires #######
 import os
 import unicodedata
-
+from time import perf_counter
 ########## Variable globale ##############
 ALPHABET = "abcdefghijklmnopqrstuvwxyz"
 
+############# Fonctions ##############
 def enlever_caracteres_speciaux(mot):
     """Enlève les caractères spéciaux d'un texte.
 
@@ -18,8 +19,9 @@ def enlever_caracteres_speciaux(mot):
     Returns:
         str: Le texte normalisé sans caractères spéciaux.
     """
-    mot_normalise = unicodedata.normalize('NKFD', mot)
-    return ''.join([char for char in mot_normalise if not unicodedata.combining(char)]
+    mot_normalise = unicodedata.normalize('NFKD', mot)
+    return ''.join([char.lower() for char in mot_normalise 
+                if (char.isalpha() or char == " ") and not unicodedata.combining(char)]
     )
 
 def entree_utilisateur():
@@ -103,6 +105,7 @@ def brute_force_cesar(texte):
     meilleur_score = 0
     meilleure_decalage = 0
     # On essaie tous les décalages de 0 à 26
+    tic=perf_counter()
     for decalage in range(27):
         texte_decode = decode_cesar(texte, decalage)
         # On compte le nombre de 'e' dans le texte décodé
@@ -112,7 +115,8 @@ def brute_force_cesar(texte):
             meilleur_score = score
             texte_devine = texte_decode
             meilleure_decalage = decalage
-
+    toc=perf_counter()
+    print("Temps d'exécution pour la brute force : ", toc-tic, "secondes")
     print("le texte devine est : ", texte_devine)
     # On demande à l'utilisateur s'il est satisfait du résultat sinon on passe en mode brute force manuel
     satisfait = input("Êtes-vous satisfait du résultat ? (o/n) : ")
@@ -183,6 +187,65 @@ def sauvegarder_fichier(texte):
     print("Sauvegarde réussie\n")
 #source https://www.w3schools.com/python/python_file_write.asp
 
+
+def brute_force_dictionnaire(texte):
+    """Réalise le decodage du texte sans connaitre la clé.
+    Utilise un dictionnaire de mots français pour trouver le mot le plus probable.
+
+    Args:
+        texte (str): Le texte qui est à décoder.
+
+    Returns:
+        texte_devine (str): Le texte qui est la solution la plus probable.
+        decalage (int): Le décalage trouvé.
+    """
+    texte_devine = ""
+    if not os.path.isfile("liste_francais.txt"):
+        print("Erreur : fichier 'liste_francais.txt' introuvable.")
+        return None, None
+    else:
+        with open("liste_francais.txt", "r") as f:
+            dictionnaire = f.read().splitlines()
+        # On enlève les caractères spéciaux du mot chiffré
+        texte_formate = enlever_caracteres_speciaux(texte)
+        liste_texte = texte_formate.split()
+        dictionnaire = [enlever_caracteres_speciaux(mot) for mot in dictionnaire]
+        mot_1 = liste_texte[0]
+
+
+    # Analyse performance
+    tic=perf_counter()
+    # On essaie tous les décalages de 0 à 26
+    for decalage in range(27):
+        mot_1_decode = decode_cesar(mot_1, decalage)
+        # On vérifie si le mot déchiffré est dans le dictionnaire
+        # On ignore les mots de moins de 3 lettres
+        if mot_1_decode in dictionnaire and len(mot_1_decode) > 2:  
+            texte_devine = decode_cesar(texte, decalage)
+            break
+        # Si le mot déchiffré est dans le dictionnaire mais de moins de 3 lettres
+        # On vérifie le mot suivant dans la liste
+        elif mot_1_decode in dictionnaire and len(mot_1_decode) <= 2:
+            mot_2=liste_texte[1]
+            i=1
+            while len(mot_2) < 2 and i < len(liste_texte)-1:
+                i=i+1
+                mot_2=liste_texte[i]
+            
+            mot_2_decode = decode_cesar(mot_2, decalage)
+            
+            if mot_2_decode in dictionnaire:
+                
+                texte_devine = decode_cesar(texte, decalage)
+                break       
+    toc=perf_counter()
+    print("Temps d'exécution pour la brute force : ", toc-tic, "secondes")
+    print("le texte devine est : ", texte_devine)
+    return texte_devine,decalage
+
+
+
+
 def main():
     """Fonction principale qui affiche le menu et gère les choix de l'utilisateur.
     Demande à l'utilisateur de choisir une option et appelle la fonction correspondante.
@@ -197,8 +260,10 @@ def main():
         print("2. Décoder un texte")
         print("3. Encoder un texte depuis un fichier")
         print("4. Décoder un texte depuis un fichier")
-        print("5. Brute force sur un texte entré manuellement")
-        print("6. Brute force sur un texte depuis un fichier")
+        print("5. Brute force basé sur la répétition de e sur un texte entré manuellement")
+        print("6. Brute force basé sur la répétition de e sur un texte depuis un fichier")
+        print("7. Brute force via reconnaissance d'un mot dans un dictionnaire sur un texte entré manuellement")
+        print("8. Brute force via reconnaissance d'un mot dans un dictionnaire sur un texte depuis un fichier")
         choix_fct = input("Votre choix : ")
         #usage de if else if pour remplacer le switch case
         # Encoder le texte
@@ -245,11 +310,28 @@ def main():
         # Brute force sur un texte depuis un fichier
         elif choix_fct == "6":
             texte, cle = ouvrir_fichier()
-            brute_force_cesar(texte)
+            resultat,_ =brute_force_cesar(texte)
+            sauvegarder_fichier(resultat)
+        elif choix_fct == "7":
+            texte = input("Veuillez entrer le texte à déchiffrer : ")
+            if texte is not None:
+                brute_force_dictionnaire(texte)
+                
+            else:
+                print("Veillez entrer un texte valide.")
+                continue
+        elif choix_fct == "8":
+            texte, cle = ouvrir_fichier()
+            if texte is not None:
+                resultat,_ = brute_force_dictionnaire(texte)
+                sauvegarder_fichier(resultat)
+            else:
+                print("Erreur : le fichier n'a pas pu être ouvert.")
+                continue
         else:
-            print("Merci d'entrer un nombre entre 0 et 6.")
+            print("Merci d'entrer un nombre entre 0 et 8.")
             break
 
-
+############## Main ###############
 if __name__ == "__main__":
     main()
