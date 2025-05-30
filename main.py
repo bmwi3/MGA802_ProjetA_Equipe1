@@ -26,7 +26,7 @@ chemin_fichier = ''
 
 def choix_de_la_fonction():
     print ("********************************************************************************* \n"
-           "bonjour, ce code est un decripteur, il permet de cripter ou de decripter un texte,\n"
+           "bonjour, ce code est un decripteur, il permet de cripter ou de decripter un texte \n"
            "********************************************************************************* \n \n")
     choix_fct = input(""
                       "Si vous voulez decripter, tapez 1, vous voulez cripter, tapez 2 : ,vous voulez decripter sans connaitre la clé, tapez 3 :")
